@@ -12,8 +12,8 @@ const Index = () => {
           
           <main className="flex-1">
             {/* Header */}
-            <header className="h-16 border-b border-white/10 bg-background/80 backdrop-blur-xl flex items-center px-6">
-              <SidebarTrigger className="mr-4 text-foreground hover:bg-glass-hover p-2 rounded-lg" />
+            <header className="h-16 border-b border-white/6 bg-background/85 backdrop-blur-tahoe-lg flex items-center px-6">
+              <SidebarTrigger className="mr-4 text-foreground hover:bg-tahoe-hover p-2 rounded-xl transition-all duration-300" />
               <div className="flex-1">
                 <h1 className="text-xl font-semibold text-foreground">Trading Dashboard</h1>
                 <p className="text-sm text-muted-foreground">Monitor your portfolio and market alerts</p>

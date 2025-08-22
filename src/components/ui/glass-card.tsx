@@ -8,8 +8,10 @@ const GlassCard = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "rounded-lg border border-white/10 bg-glass backdrop-blur-glass shadow-glass",
-      "hover:bg-glass-hover transition-all duration-300",
+      "rounded-xl border border-white/8 bg-tahoe backdrop-blur-tahoe shadow-tahoe",
+      "hover:bg-tahoe-hover transition-all duration-500 ease-out",
+      "before:absolute before:inset-0 before:rounded-xl before:border before:border-white/4 before:pointer-events-none",
+      "relative overflow-hidden",
       className
     )}
     {...props}

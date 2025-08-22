@@ -36,7 +36,7 @@ export function AlertsSection() {
         <GlassCardContent>
           <div className="space-y-3">
             {ipoAlerts.map((ipo, index) => (
-              <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-glass-hover">
+              <div key={index} className="flex items-center justify-between p-4 rounded-xl bg-tahoe backdrop-blur-tahoe border border-white/4">
                 <div>
                   <p className="font-semibold text-foreground">{ipo.company}</p>
                   <p className="text-sm text-muted-foreground">Price Range: {ipo.priceRange}</p>
@@ -62,7 +62,7 @@ export function AlertsSection() {
         <GlassCardContent>
           <div className="space-y-3">
             {dividendAlerts.map((dividend, index) => (
-              <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-glass-hover">
+              <div key={index} className="flex items-center justify-between p-4 rounded-xl bg-tahoe backdrop-blur-tahoe border border-white/4">
                 <div>
                   <p className="font-semibold text-foreground">
                     {dividend.symbol} - {dividend.company}
@@ -90,7 +90,7 @@ export function AlertsSection() {
         <GlassCardContent>
           <div className="space-y-3">
             {marketTimingAlerts.map((alert, index) => (
-              <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-glass-hover">
+              <div key={index} className="flex items-center justify-between p-4 rounded-xl bg-tahoe backdrop-blur-tahoe border border-white/4">
                 <div className="flex items-center gap-3">
                   <div className={`w-3 h-3 rounded-full ${
                     alert.status === "active" ? "bg-success" : "bg-muted"

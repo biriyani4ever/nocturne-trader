@@ -100,7 +100,7 @@ export function PortfolioOverview() {
         <GlassCardContent>
           <div className="space-y-4">
             {topHoldings.map((holding) => (
-              <div key={holding.symbol} className="flex items-center justify-between p-3 rounded-lg bg-glass-hover">
+              <div key={holding.symbol} className="flex items-center justify-between p-4 rounded-xl bg-tahoe backdrop-blur-tahoe border border-white/4">
                 <div>
                   <p className="font-semibold text-foreground">{holding.symbol}</p>
                   <p className="text-sm text-muted-foreground">{holding.name}</p>

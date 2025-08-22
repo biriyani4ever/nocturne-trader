@@ -44,22 +44,22 @@ export function TradingSidebar() {
 
   const getNavClassName = ({ isActive }: { isActive: boolean }) =>
     isActive 
-      ? "bg-glass border border-white/20 text-foreground font-medium" 
-      : "hover:bg-glass-hover transition-all duration-200"
+      ? "bg-tahoe-active backdrop-blur-tahoe border border-white/12 text-foreground font-medium shadow-tahoe" 
+      : "hover:bg-tahoe-hover backdrop-blur-tahoe transition-all duration-300 ease-out"
 
   return (
     <Sidebar
-      className={`${collapsed ? "w-16" : "w-64"} border-r border-white/10 bg-background/80 backdrop-blur-xl`}
+      className={`${collapsed ? "w-16" : "w-64"} border-r border-white/6 bg-background/90 backdrop-blur-tahoe-lg`}
       collapsible="icon"
     >
       <SidebarContent className="p-4">
         <div className="mb-8">
-          <h1 className={`font-bold text-xl text-foreground ${collapsed ? "hidden" : "block"}`}>
-            TradePro
+          <h1 className={`font-bold text-2xl text-foreground tracking-tight ${collapsed ? "hidden" : "block"}`}>
+            Zylo
           </h1>
           {collapsed && (
-            <div className="w-8 h-8 rounded-lg bg-glass border border-white/20 flex items-center justify-center">
-              <BarChart3 className="w-4 h-4" />
+            <div className="w-10 h-10 rounded-xl bg-tahoe backdrop-blur-tahoe border border-white/6 flex items-center justify-center shadow-tahoe">
+              <BarChart3 className="w-5 h-5" />
             </div>
           )}
         </div>
@@ -78,7 +78,7 @@ export function TradingSidebar() {
                       to={item.url} 
                       end 
                       className={({ isActive }) => 
-                        `flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 ${getNavClassName({ isActive })}`
+                        `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ease-out ${getNavClassName({ isActive })}`
                       }
                     >
                       <item.icon className="w-5 h-5" />

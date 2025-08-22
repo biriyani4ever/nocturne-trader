@@ -68,14 +68,17 @@ export default {
 				}
 			},
 			backgroundImage: {
-				'glass': 'var(--gradient-glass)',
-				'glass-hover': 'var(--gradient-hover)'
+				'tahoe': 'var(--gradient-tahoe)',
+				'tahoe-hover': 'var(--gradient-tahoe-hover)',
+				'tahoe-active': 'var(--gradient-tahoe-active)'
 			},
 			boxShadow: {
-				'glass': 'var(--glass-shadow)'
+				'tahoe': 'var(--tahoe-glass-shadow)',
+				'tahoe-lg': 'var(--tahoe-glass-shadow-lg)'
 			},
 			backdropBlur: {
-				'glass': '16px'
+				'tahoe': 'var(--tahoe-blur)',
+				'tahoe-lg': 'var(--tahoe-blur-lg)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

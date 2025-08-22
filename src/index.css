@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Monochromatic Glass Trading Interface Design System */
+/* Zylo - macOS Tahoe Glass Trading Interface Design System */
 
 @layer base {
   :root {
@@ -10,13 +10,9 @@
     --background: 0 0% 0%;
     --foreground: 0 0% 100%;
 
-    /* Glass morphism cards */
+    /* Glass morphism cards - Tahoe style */
     --card: 0 0% 100%;
     --card-foreground: 0 0% 100%;
-    
-    /* Glass overlay effects */
-    --glass-overlay: 0 0% 100%;
-    --glass-border: 0 0% 100%;
     
     /* Interactive elements */
     --primary: 0 0% 100%;
@@ -26,12 +22,12 @@
     --secondary-foreground: 0 0% 100%;
 
     --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 70%;
+    --muted-foreground: 0 0% 75%;
 
     --accent: 0 0% 15%;
     --accent-foreground: 0 0% 100%;
 
-    /* Status colors with monochromatic approach */
+    /* Status colors */
     --success: 120 100% 50%;
     --success-foreground: 0 0% 0%;
     
@@ -42,30 +38,38 @@
     --destructive-foreground: 0 0% 100%;
 
     /* UI elements */ 
-    --border: 0 0% 20%;
-    --input: 0 0% 10%;
+    --border: 0 0% 18%;
+    --input: 0 0% 8%;
     --ring: 0 0% 100%;
 
-    --radius: 0.75rem;
+    --radius: 0.875rem;
 
     /* Sidebar specific */
     --sidebar-background: 0 0% 0%;
     --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: 0 0% 100%;
     --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 0 0% 8%;
+    --sidebar-accent: 0 0% 6%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 0 0% 15%;
+    --sidebar-border: 0 0% 12%;
     --sidebar-ring: 0 0% 100%;
 
-    /* Glass morphism effects */
-    --glass-bg: hsla(0, 0%, 100%, 0.05);
-    --glass-border: hsla(0, 0%, 100%, 0.1);
-    --glass-shadow: 0 8px 32px hsla(0, 0%, 0%, 0.3);
+    /* macOS Tahoe Glass Effects */
+    --tahoe-glass-bg: hsla(0, 0%, 100%, 0.03);
+    --tahoe-glass-hover: hsla(0, 0%, 100%, 0.06);
+    --tahoe-glass-active: hsla(0, 0%, 100%, 0.08);
+    --tahoe-glass-border: hsla(0, 0%, 100%, 0.08);
+    --tahoe-glass-shadow: 0 4px 24px hsla(0, 0%, 0%, 0.4);
+    --tahoe-glass-shadow-lg: 0 8px 40px hsla(0, 0%, 0%, 0.5);
     
-    /* Gradients */
-    --gradient-glass: linear-gradient(135deg, hsla(0, 0%, 100%, 0.1), hsla(0, 0%, 100%, 0.05));
-    --gradient-hover: linear-gradient(135deg, hsla(0, 0%, 100%, 0.15), hsla(0, 0%, 100%, 0.08));
+    /* Refined Gradients */
+    --gradient-tahoe: linear-gradient(145deg, hsla(0, 0%, 100%, 0.04), hsla(0, 0%, 100%, 0.02));
+    --gradient-tahoe-hover: linear-gradient(145deg, hsla(0, 0%, 100%, 0.08), hsla(0, 0%, 100%, 0.04));
+    --gradient-tahoe-active: linear-gradient(145deg, hsla(0, 0%, 100%, 0.12), hsla(0, 0%, 100%, 0.06));
+    
+    /* Backdrop blur values */
+    --tahoe-blur: 20px;
+    --tahoe-blur-lg: 24px;
   }
 }
 
