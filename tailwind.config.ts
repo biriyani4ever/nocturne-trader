@@ -44,10 +44,6 @@ export default {
 					DEFAULT: 'hsl(var(--accent))',
 					foreground: 'hsl(var(--accent-foreground))'
 				},
-				popover: {
-					DEFAULT: 'hsl(var(--popover))',
-					foreground: 'hsl(var(--popover-foreground))'
-				},
 				card: {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
@@ -61,7 +57,25 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				success: {
+					DEFAULT: 'hsl(var(--success))',
+					foreground: 'hsl(var(--success-foreground))'
+				},
+				warning: {
+					DEFAULT: 'hsl(var(--warning))',
+					foreground: 'hsl(var(--warning-foreground))'
 				}
+			},
+			backgroundImage: {
+				'glass': 'var(--gradient-glass)',
+				'glass-hover': 'var(--gradient-hover)'
+			},
+			boxShadow: {
+				'glass': 'var(--glass-shadow)'
+			},
+			backdropBlur: {
+				'glass': '16px'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
