@@ -2,8 +2,13 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { TradingSidebar } from "@/components/trading-sidebar";
 import { PortfolioOverview } from "@/components/portfolio-overview";
 import { AlertsSection } from "@/components/alerts-section";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { LogOut } from "lucide-react";
 
 const Index = () => {
+  const { signOut, user } = useAuth();
+
   return (
     <SidebarProvider>
       <div className="min-h-screen w-full bg-background">
@@ -19,13 +24,25 @@ const Index = () => {
                 <p className="text-sm text-muted-foreground">Monitor your portfolio and market alerts</p>
               </div>
               <div className="flex items-center gap-4">
-                <div className="text-right">
+                <div className="text-right mr-4">
                   <p className="text-sm text-muted-foreground">Market Status</p>
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-success rounded-full"></div>
                     <span className="text-sm font-medium text-foreground">Open</span>
                   </div>
                 </div>
+                <div className="text-right mr-4">
+                  <p className="text-xs text-muted-foreground">Signed in as</p>
+                  <p className="text-sm font-medium text-foreground">{user?.email}</p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={signOut}
+                  className="text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                >
+                  <LogOut className="h-4 w-4" />
+                </Button>
               </div>
             </header>
 
