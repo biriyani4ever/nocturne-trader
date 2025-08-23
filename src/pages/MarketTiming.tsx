@@ -3,99 +3,62 @@ import { TradingSidebar } from "@/components/trading-sidebar";
 import { GlassCard, GlassCardContent, GlassCardHeader, GlassCardTitle } from "@/components/ui/glass-card";
 import { Clock, Bell, Activity, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useMarketTiming } from "@/hooks/useMarketTiming";
+import { isMarketDay, isMarketHoliday } from "@/lib/market-timing";
 
-const marketTimingData = {
-  sessionTimes: [
-    {
-      session: "Pre-Market Trading",
-      time: "04:00 AM - 09:30 AM EST",
-      status: "active",
-      nextEvent: "Market Open",
-      nextTime: "09:30 AM",
-      description: "Extended hours trading before market open"
-    },
-    {
-      session: "Regular Trading Hours",
-      time: "09:30 AM - 04:00 PM EST",
-      status: "upcoming",
-      nextEvent: "Market Open",
-      nextTime: "09:30 AM",
-      description: "Primary trading session"
-    },
-    {
-      session: "After-Hours Trading",
-      time: "04:00 PM - 08:00 PM EST",
-      status: "upcoming",
-      nextEvent: "After-Hours Start",
-      nextTime: "04:00 PM",
-      description: "Extended hours trading after market close"
-    }
-  ],
-  alerts: [
-    {
-      id: 1,
-      type: "Session Start",
-      message: "Pre-market trading has begun",
-      time: "04:00 AM",
-      status: "triggered",
-      timestamp: "2024-01-11 04:00:00"
-    },
-    {
-      id: 2,
-      type: "Volume Alert",
-      message: "High pre-market volume detected for TSLA",
-      time: "07:45 AM",
-      status: "triggered",
-      timestamp: "2024-01-11 07:45:00"
-    },
-    {
-      id: 3,
-      type: "Market Open",
-      message: "Regular trading session will begin in 30 minutes",
-      time: "09:00 AM",
-      status: "pending",
-      timestamp: "2024-01-11 09:00:00"
-    }
-  ],
-  keyEvents: [
-    {
-      event: "Federal Reserve Meeting",
-      date: "2024-01-31",
-      time: "02:00 PM EST",
-      impact: "High",
-      description: "Interest rate decision announcement"
-    },
-    {
-      event: "Non-Farm Payrolls",
-      date: "2024-01-05",
-      time: "08:30 AM EST",
-      impact: "High",
-      description: "Monthly employment data release"
-    },
-    {
-      event: "CPI Inflation Data",
-      date: "2024-01-12",
-      time: "08:30 AM EST",
-      impact: "Medium",
-      description: "Consumer Price Index report"
-    },
-    {
-      event: "Earnings Season Begins",
-      date: "2024-01-15",
-      time: "Various",
-      impact: "High",
-      description: "Q4 2023 earnings reports start"
-    }
-  ],
-  marketHours: {
-    current: "Pre-Market",
-    timeUntilNext: "2h 15m",
-    nextSession: "Regular Trading",
-    timezone: "Eastern Standard Time"
+// Sample key events data (would typically come from an API or configuration)
+const upcomingKeyEvents = [
+  {
+    event: "Federal Reserve Meeting",
+    date: "2024-01-31",
+    time: "02:00 PM EST",
+    impact: "High",
+    description: "Interest rate decision announcement"
+  },
+  {
+    event: "Non-Farm Payrolls",
+    date: "2024-02-02",
+    time: "08:30 AM EST",
+    impact: "High", 
+    description: "Monthly employment data release"
+  },
+  {
+    event: "CPI Inflation Data",
+    date: "2024-02-13",
+    time: "08:30 AM EST",
+    impact: "Medium",
+    description: "Consumer Price Index report"
+  },
+  {
+    event: "Earnings Season Continues",
+    date: "2024-02-15",
+    time: "Various",
+    impact: "High",
+    description: "Q4 2024 earnings reports continue"
   }
-};
+];
 
 const MarketTiming = () => {
+  const { marketSessions, marketStatus, alerts, isLoading } = useMarketTiming();
+  
+  // Determine current market day status
+  const isCurrentMarketDay = isMarketDay();
+  const isHoliday = isMarketHoliday();
+  
+  if (isLoading) {
+    return (
+      <SidebarProvider>
+        <div className="min-h-screen w-full bg-background">
+          <div className="flex w-full">
+            <TradingSidebar />
+            <main className="flex-1 flex items-center justify-center">
+              <div className="text-muted-foreground">Loading market timing data...</div>
+            </main>
+          </div>
+        </div>
+      </SidebarProvider>
+    );
+  }
   return (
     <SidebarProvider>
       <div className="min-h-screen w-full bg-background">
@@ -115,6 +78,27 @@ const MarketTiming = () => {
               {/* Current Market Status */}
               <section>
                 <h2 className="text-2xl font-bold text-foreground mb-6">Current Market Status</h2>
+                
+                {/* Market Day Status Banner */}
+                {(!isCurrentMarketDay || isHoliday) && (
+                  <div className="mb-6 p-4 rounded-xl bg-destructive/10 border border-destructive/20">
+                    <div className="flex items-center gap-3">
+                      <Calendar className="h-5 w-5 text-destructive" />
+                      <div>
+                        <p className="font-semibold text-destructive">
+                          {isHoliday ? 'Market Holiday' : 'Weekend - Markets Closed'}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {isHoliday 
+                            ? 'US stock markets are closed today for a federal holiday' 
+                            : 'US stock markets are closed on weekends'
+                          }
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                   <GlassCard>
                     <GlassCardHeader>
@@ -123,13 +107,21 @@ const MarketTiming = () => {
                     <GlassCardContent>
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-xl font-bold text-foreground">{marketTimingData.marketHours.current}</p>
+                          <p className="text-xl font-bold text-foreground">{marketStatus.current}</p>
                           <div className="flex items-center mt-2">
-                            <div className="w-2 h-2 bg-success rounded-full mr-2"></div>
-                            <span className="text-sm text-success">Active</span>
+                            <div className={`w-2 h-2 rounded-full mr-2 ${
+                              marketStatus.isMarketOpen ? 'bg-success' : 'bg-destructive'
+                            }`}></div>
+                            <span className={`text-sm ${
+                              marketStatus.isMarketOpen ? 'text-success' : 'text-destructive'
+                            }`}>
+                              {marketStatus.isMarketOpen ? 'Active' : 'Closed'}
+                            </span>
                           </div>
                         </div>
-                        <Activity className="h-8 w-8 text-success" />
+                        <Activity className={`h-8 w-8 ${
+                          marketStatus.isMarketOpen ? 'text-success' : 'text-muted-foreground'
+                        }`} />
                       </div>
                     </GlassCardContent>
                   </GlassCard>
@@ -141,8 +133,8 @@ const MarketTiming = () => {
                     <GlassCardContent>
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-xl font-bold text-foreground">{marketTimingData.marketHours.nextSession}</p>
-                          <p className="text-sm text-muted-foreground">in {marketTimingData.marketHours.timeUntilNext}</p>
+                          <p className="text-xl font-bold text-foreground">{marketStatus.nextSession}</p>
+                          <p className="text-sm text-muted-foreground">in {marketStatus.timeUntilNext}</p>
                         </div>
                         <Clock className="h-8 w-8 text-muted-foreground" />
                       </div>
@@ -151,12 +143,13 @@ const MarketTiming = () => {
 
                   <GlassCard>
                     <GlassCardHeader>
-                      <GlassCardTitle className="text-lg">Timezone</GlassCardTitle>
+                      <GlassCardTitle className="text-lg">Market Time</GlassCardTitle>
                     </GlassCardHeader>
                     <GlassCardContent>
                       <div className="text-center">
-                        <p className="text-lg font-semibold text-foreground">EST</p>
-                        <p className="text-sm text-muted-foreground">{marketTimingData.marketHours.timezone}</p>
+                        <p className="text-lg font-semibold text-foreground">{marketStatus.currentTime}</p>
+                        <p className="text-sm text-muted-foreground">{marketStatus.timezone}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{marketStatus.currentDate}</p>
                       </div>
                     </GlassCardContent>
                   </GlassCard>
@@ -169,7 +162,7 @@ const MarketTiming = () => {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-2xl font-bold text-warning">
-                            {marketTimingData.alerts.filter(a => a.status === 'pending').length}
+                            {alerts.filter(a => a.status === 'pending').length}
                           </p>
                         </div>
                         <Bell className="h-8 w-8 text-warning" />
@@ -183,12 +176,16 @@ const MarketTiming = () => {
               <section>
                 <h2 className="text-2xl font-bold text-foreground mb-6">Trading Sessions</h2>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  {marketTimingData.sessionTimes.map((session, index) => (
+                  {marketSessions.map((session, index) => (
                     <GlassCard key={index}>
                       <GlassCardHeader>
                         <div className="flex items-center justify-between">
                           <GlassCardTitle className="text-lg">{session.session}</GlassCardTitle>
-                          <Badge variant={session.status === 'active' ? 'default' : 'secondary'}>
+                          <Badge variant={
+                            session.status === 'active' ? 'default' : 
+                            session.status === 'upcoming' ? 'secondary' : 
+                            'outline'
+                          }>
                             {session.status}
                           </Badge>
                         </div>
@@ -197,7 +194,7 @@ const MarketTiming = () => {
                         <div className="space-y-3">
                           <div>
                             <p className="text-sm text-muted-foreground">Time</p>
-                            <p className="font-semibold text-foreground">{session.time}</p>
+                            <p className="font-semibold text-foreground">{session.startTime} - {session.endTime}</p>
                           </div>
                           <div>
                             <p className="text-sm text-muted-foreground">Next Event</p>
@@ -216,36 +213,43 @@ const MarketTiming = () => {
                 <h2 className="text-2xl font-bold text-foreground mb-6">Market Timing Alerts</h2>
                 <GlassCard>
                   <GlassCardContent>
-                    <div className="space-y-4">
-                      {marketTimingData.alerts.map((alert) => (
-                        <div key={alert.id} className="flex items-center justify-between p-4 rounded-xl bg-tahoe backdrop-blur-tahoe border border-white/4">
-                          <div className="flex items-center gap-4">
-                            <div className={`flex items-center justify-center w-12 h-12 rounded-xl border ${
-                              alert.status === 'triggered' ? 'bg-success/10 border-success/20' : 'bg-warning/10 border-warning/20'
-                            }`}>
-                              {alert.status === 'triggered' ? (
-                                <Bell className="h-5 w-5 text-success" />
-                              ) : (
-                                <Clock className="h-5 w-5 text-warning" />
-                              )}
-                            </div>
-                            <div>
-                              <div className="flex items-center gap-2 mb-1">
-                                <p className="font-semibold text-foreground">{alert.type}</p>
-                                <Badge variant={alert.status === 'triggered' ? 'default' : 'secondary'}>
-                                  {alert.status}
-                                </Badge>
+                    {alerts.length === 0 ? (
+                      <div className="text-center py-8">
+                        <Bell className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                        <p className="text-muted-foreground">No active market timing alerts</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {alerts.map((alert) => (
+                          <div key={alert.id} className="flex items-center justify-between p-4 rounded-xl bg-tahoe backdrop-blur-tahoe border border-white/4">
+                            <div className="flex items-center gap-4">
+                              <div className={`flex items-center justify-center w-12 h-12 rounded-xl border ${
+                                alert.status === 'triggered' ? 'bg-success/10 border-success/20' : 'bg-warning/10 border-warning/20'
+                              }`}>
+                                {alert.status === 'triggered' ? (
+                                  <Bell className="h-5 w-5 text-success" />
+                                ) : (
+                                  <Clock className="h-5 w-5 text-warning" />
+                                )}
                               </div>
-                              <p className="text-sm text-muted-foreground">{alert.message}</p>
+                              <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                  <p className="font-semibold text-foreground">{alert.type}</p>
+                                  <Badge variant={alert.status === 'triggered' ? 'default' : 'secondary'}>
+                                    {alert.status}
+                                  </Badge>
+                                </div>
+                                <p className="text-sm text-muted-foreground">{alert.message}</p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-semibold text-foreground">{alert.time}</p>
+                              <p className="text-sm text-muted-foreground">{alert.timestamp.split(' ')[0]}</p>
                             </div>
                           </div>
-                          <div className="text-right">
-                            <p className="font-semibold text-foreground">{alert.time}</p>
-                            <p className="text-sm text-muted-foreground">{alert.timestamp.split(' ')[0]}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    )}
                   </GlassCardContent>
                 </GlassCard>
               </section>
@@ -267,7 +271,7 @@ const MarketTiming = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {marketTimingData.keyEvents.map((event, index) => (
+                          {upcomingKeyEvents.map((event, index) => (
                             <tr key={index} className="border-b border-white/4 last:border-0 hover:bg-tahoe-hover transition-colors duration-200">
                               <td className="p-4">
                                 <p className="font-semibold text-foreground">{event.event}</p>
