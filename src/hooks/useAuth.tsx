@@ -103,9 +103,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else {
         toast({
           title: "Account created!",
-          description: "Please check your email to verify your account.",
+          description: "If email confirmation is enabled, please check your email. Otherwise, you can sign in now.",
         });
-        navigate("/");
+        // Don't navigate immediately, let user sign in after email confirmation
       }
     } catch (error) {
       toast({
