@@ -6,40 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { useMarketTiming } from "@/hooks/useMarketTiming";
 import { isMarketDay, isMarketHoliday } from "@/lib/market-timing";
 
-// Sample key events data (would typically come from an API or configuration)
-const upcomingKeyEvents = [
-  {
-    event: "Federal Reserve Meeting",
-    date: "2024-01-31",
-    time: "02:00 PM EST",
-    impact: "High",
-    description: "Interest rate decision announcement"
-  },
-  {
-    event: "Non-Farm Payrolls",
-    date: "2024-02-02",
-    time: "08:30 AM EST",
-    impact: "High", 
-    description: "Monthly employment data release"
-  },
-  {
-    event: "CPI Inflation Data",
-    date: "2024-02-13",
-    time: "08:30 AM EST",
-    impact: "Medium",
-    description: "Consumer Price Index report"
-  },
-  {
-    event: "Earnings Season Continues",
-    date: "2024-02-15",
-    time: "Various",
-    impact: "High",
-    description: "Q4 2024 earnings reports continue"
-  }
-];
 
 const MarketTiming = () => {
-  const { marketSessions, marketStatus, alerts, isLoading } = useMarketTiming();
+  const { marketSessions, marketStatus, alerts, marketEvents, eventAlerts, isLoading } = useMarketTiming();
   
   // Determine current market day status
   const isCurrentMarketDay = isMarketDay();
@@ -271,12 +240,28 @@ const MarketTiming = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {upcomingKeyEvents.map((event, index) => (
-                            <tr key={index} className="border-b border-white/4 last:border-0 hover:bg-tahoe-hover transition-colors duration-200">
+                          {marketEvents.map((event, index) => (
+                            <tr key={event.id} className="border-b border-white/4 last:border-0 hover:bg-tahoe-hover transition-colors duration-200">
                               <td className="p-4">
-                                <p className="font-semibold text-foreground">{event.event}</p>
+                                <div className="flex items-center gap-2">
+                                  <p className="font-semibold text-foreground">{event.event}</p>
+                                  <Badge variant="outline" className="text-xs">
+                                    {event.category}
+                                  </Badge>
+                                </div>
                               </td>
-                              <td className="p-4 text-foreground">{event.date}</td>
+                              <td className="p-4">
+                                <div>
+                                  <p className="text-foreground">{event.date}</p>
+                                  {event.daysUntil >= 0 && (
+                                    <p className="text-xs text-muted-foreground">
+                                      {event.daysUntil === 0 ? 'Today' : 
+                                       event.daysUntil === 1 ? 'Tomorrow' : 
+                                       `${event.daysUntil} days`}
+                                    </p>
+                                  )}
+                                </div>
+                              </td>
                               <td className="p-4 text-foreground">{event.time}</td>
                               <td className="p-4">
                                 <Badge variant={

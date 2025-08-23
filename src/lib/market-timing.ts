@@ -305,3 +305,6 @@ export function generateMarketAlerts(): MarketAlert[] {
   
   return alerts;
 }
+
+// Re-export market events functions
+export { getUpcomingMarketEvents, generateEventAlerts, type MarketEvent } from './market-events';

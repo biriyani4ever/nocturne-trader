@@ -3,15 +3,28 @@ import {
   getMarketSessions, 
   getMarketStatus, 
   generateMarketAlerts,
+  getUpcomingMarketEvents,
+  generateEventAlerts,
   type MarketSession,
   type MarketStatus,
-  type MarketAlert
+  type MarketAlert,
+  type MarketEvent
 } from '@/lib/market-timing';
 
 interface UseMarketTimingReturn {
   marketSessions: MarketSession[];
   marketStatus: MarketStatus;
   alerts: MarketAlert[];
+  marketEvents: MarketEvent[];
+  eventAlerts: Array<{
+    id: string;
+    type: string;
+    message: string;
+    status: 'pending' | 'triggered';
+    time: string;
+    timestamp: string;
+    category: string;
+  }>;
   isLoading: boolean;
   lastUpdated: Date;
 }
@@ -28,6 +41,16 @@ export function useMarketTiming(): UseMarketTimingReturn {
     currentTime: ''
   });
   const [alerts, setAlerts] = useState<MarketAlert[]>([]);
+  const [marketEvents, setMarketEvents] = useState<MarketEvent[]>([]);
+  const [eventAlerts, setEventAlerts] = useState<Array<{
+    id: string;
+    type: string;
+    message: string;
+    status: 'pending' | 'triggered';
+    time: string;
+    timestamp: string;
+    category: string;
+  }>>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(new Date());
 
@@ -36,10 +59,14 @@ export function useMarketTiming(): UseMarketTimingReturn {
       const sessions = getMarketSessions();
       const status = getMarketStatus();
       const marketAlerts = generateMarketAlerts();
+      const events = getUpcomingMarketEvents();
+      const eventsAlerts = generateEventAlerts(events);
 
       setMarketSessions(sessions);
       setMarketStatus(status);
       setAlerts(marketAlerts);
+      setMarketEvents(events);
+      setEventAlerts(eventsAlerts);
       setLastUpdated(new Date());
       setIsLoading(false);
     } catch (error) {
@@ -62,6 +89,8 @@ export function useMarketTiming(): UseMarketTimingReturn {
     marketSessions,
     marketStatus,
     alerts,
+    marketEvents,
+    eventAlerts,
     isLoading,
     lastUpdated
   };
