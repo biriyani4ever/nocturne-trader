@@ -1,41 +1,80 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { TradingSidebar } from "@/components/trading-sidebar";
 import { GlassCard, GlassCardContent, GlassCardHeader, GlassCardTitle } from "@/components/ui/glass-card";
-import { Settings as SettingsIcon, User, Bell, Shield, Palette, Database } from "lucide-react";
+import { Settings as SettingsIcon, User, Bell, Shield, Palette, Database, Menu, Download } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useSettings } from "@/hooks/useSettings";
+import { exportToPDF } from "@/utils/pdfExport";
+import { toast } from "@/hooks/use-toast";
 
-const settingsData = {
-  profile: {
-    name: "John Doe",
-    email: "john.doe@email.com",
-    timezone: "Eastern Standard Time",
-    currency: "USD"
-  },
-  notifications: {
-    priceAlerts: true,
-    dividendAlerts: true,
-    ipoAlerts: true,
-    marketTiming: true,
-    emailNotifications: false,
-    pushNotifications: true
-  },
-  display: {
-    theme: "dark",
-    currency: "USD",
-    language: "English",
-    dateFormat: "MM/DD/YYYY"
-  },
-  security: {
-    twoFactorAuth: true,
-    sessionTimeout: "30 minutes",
-    loginAlerts: true
-  }
-};
+const timezones = [
+  { value: "America/New_York", label: "Eastern Time (ET)" },
+  { value: "America/Chicago", label: "Central Time (CT)" },
+  { value: "America/Denver", label: "Mountain Time (MT)" },
+  { value: "America/Los_Angeles", label: "Pacific Time (PT)" },
+  { value: "Europe/London", label: "Greenwich Mean Time (GMT)" },
+  { value: "Europe/Paris", label: "Central European Time (CET)" },
+  { value: "Asia/Tokyo", label: "Japan Standard Time (JST)" },
+  { value: "Asia/Shanghai", label: "China Standard Time (CST)" },
+];
+
+const currencies = [
+  { value: "USD", label: "US Dollar (USD)" },
+  { value: "EUR", label: "Euro (EUR)" },
+  { value: "GBP", label: "British Pound (GBP)" },
+  { value: "JPY", label: "Japanese Yen (JPY)" },
+  { value: "CAD", label: "Canadian Dollar (CAD)" },
+  { value: "AUD", label: "Australian Dollar (AUD)" },
+  { value: "CHF", label: "Swiss Franc (CHF)" },
+];
+
+const languages = [
+  { value: "English", label: "English" },
+  { value: "Spanish", label: "Español" },
+  { value: "French", label: "Français" },
+  { value: "German", label: "Deutsch" },
+  { value: "Japanese", label: "日本語" },
+  { value: "Chinese", label: "中文" },
+];
+
+const dateFormats = [
+  { value: "MM/DD/YYYY", label: "MM/DD/YYYY" },
+  { value: "DD/MM/YYYY", label: "DD/MM/YYYY" },
+  { value: "YYYY-MM-DD", label: "YYYY-MM-DD" },
+  { value: "MMM DD, YYYY", label: "MMM DD, YYYY" },
+];
+
+const sessionTimeouts = [
+  { value: "15 minutes", label: "15 minutes" },
+  { value: "30 minutes", label: "30 minutes" },
+  { value: "1 hour", label: "1 hour" },
+  { value: "2 hours", label: "2 hours" },
+  { value: "4 hours", label: "4 hours" },
+  { value: "Never", label: "Never" },
+];
 
 const Settings = () => {
+  const { settings, isLoading, updateProfile, updateNotifications, updateDisplay, updateSecurity, saveSettings } = useSettings();
+
+  const handleExport = async (type: 'portfolio' | 'alerts' | 'transactions') => {
+    try {
+      exportToPDF(type);
+      toast({
+        title: "Export successful",
+        description: `Your ${type} data has been exported to PDF.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Export failed",
+        description: "There was an error exporting your data. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
   return (
     <SidebarProvider>
       <div className="min-h-screen w-full bg-background">
@@ -44,7 +83,12 @@ const Settings = () => {
           
           <main className="flex-1">
             <header className="h-16 border-b border-white/6 bg-background/85 backdrop-blur-tahoe-lg flex items-center px-6">
-              <SidebarTrigger className="mr-4 text-foreground hover:bg-tahoe-hover p-2 rounded-xl transition-all duration-300" />
+              <SidebarTrigger 
+                className="mr-4 text-foreground hover:bg-accent focus:bg-accent focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 p-2 rounded-xl transition-all duration-300"
+                aria-label="Toggle sidebar navigation"
+              >
+                <Menu className="h-5 w-5" />
+              </SidebarTrigger>
               <div className="flex-1">
                 <h1 className="text-xl font-semibold text-foreground">Settings</h1>
                 <p className="text-sm text-muted-foreground">Customize your Zylo experience</p>
@@ -65,41 +109,70 @@ const Settings = () => {
                   <GlassCardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <Label htmlFor="name">Full Name</Label>
+                        <Label htmlFor="name" className="text-foreground">Full Name</Label>
                         <Input 
                           id="name" 
-                          defaultValue={settingsData.profile.name}
-                          className="bg-tahoe backdrop-blur-tahoe border-white/8"
+                          value={settings.profile.name}
+                          onChange={(e) => updateProfile({ name: e.target.value })}
+                          className="bg-input border-border text-foreground placeholder:text-muted-foreground"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="email">Email Address</Label>
+                        <Label htmlFor="email" className="text-foreground">Email Address</Label>
                         <Input 
                           id="email" 
                           type="email"
-                          defaultValue={settingsData.profile.email}
-                          className="bg-tahoe backdrop-blur-tahoe border-white/8"
+                          value={settings.profile.email}
+                          onChange={(e) => updateProfile({ email: e.target.value })}
+                          className="bg-input border-border text-foreground placeholder:text-muted-foreground"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="timezone">Timezone</Label>
-                        <Input 
-                          id="timezone" 
-                          defaultValue={settingsData.profile.timezone}
-                          className="bg-tahoe backdrop-blur-tahoe border-white/8"
-                        />
+                        <Label htmlFor="timezone" className="text-foreground">Timezone</Label>
+                        <Select 
+                          value={settings.profile.timezone} 
+                          onValueChange={(value) => updateProfile({ timezone: value })}
+                        >
+                          <SelectTrigger className="bg-input border-border text-foreground">
+                            <SelectValue placeholder="Select timezone" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-background border-border">
+                            {timezones.map((tz) => (
+                              <SelectItem key={tz.value} value={tz.value} className="text-foreground hover:bg-accent">
+                                {tz.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="currency">Default Currency</Label>
-                        <Input 
-                          id="currency" 
-                          defaultValue={settingsData.profile.currency}
-                          className="bg-tahoe backdrop-blur-tahoe border-white/8"
-                        />
+                        <Label htmlFor="currency" className="text-foreground">Default Currency</Label>
+                        <Select 
+                          value={settings.profile.currency} 
+                          onValueChange={(value) => updateProfile({ currency: value })}
+                        >
+                          <SelectTrigger className="bg-input border-border text-foreground">
+                            <SelectValue placeholder="Select currency" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-background border-border">
+                            {currencies.map((curr) => (
+                              <SelectItem key={curr.value} value={curr.value} className="text-foreground hover:bg-accent">
+                                {curr.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
                     <div className="mt-6">
-                      <Button variant="default">Save Changes</Button>
+                      <Button 
+                        variant="default" 
+                        onClick={saveSettings} 
+                        disabled={isLoading}
+                        className="bg-primary text-primary-foreground hover:bg-primary/90"
+                      >
+                        {isLoading ? "Saving..." : "Save Changes"}
+                      </Button>
                     </div>
                   </GlassCardContent>
                 </GlassCard>
@@ -122,7 +195,10 @@ const Settings = () => {
                           <p className="font-medium text-foreground">Price Alerts</p>
                           <p className="text-sm text-muted-foreground">Get notified when price targets are hit</p>
                         </div>
-                        <Switch defaultChecked={settingsData.notifications.priceAlerts} />
+                        <Switch 
+                          checked={settings.notifications.priceAlerts} 
+                          onCheckedChange={(checked) => updateNotifications({ priceAlerts: checked })}
+                        />
                       </div>
                       
                       <div className="flex items-center justify-between">
@@ -130,7 +206,10 @@ const Settings = () => {
                           <p className="font-medium text-foreground">Dividend Alerts</p>
                           <p className="text-sm text-muted-foreground">Notifications for upcoming dividend payments</p>
                         </div>
-                        <Switch defaultChecked={settingsData.notifications.dividendAlerts} />
+                        <Switch 
+                          checked={settings.notifications.dividendAlerts} 
+                          onCheckedChange={(checked) => updateNotifications({ dividendAlerts: checked })}
+                        />
                       </div>
                       
                       <div className="flex items-center justify-between">
@@ -138,7 +217,10 @@ const Settings = () => {
                           <p className="font-medium text-foreground">IPO Alerts</p>
                           <p className="text-sm text-muted-foreground">Updates on new IPOs and filings</p>
                         </div>
-                        <Switch defaultChecked={settingsData.notifications.ipoAlerts} />
+                        <Switch 
+                          checked={settings.notifications.ipoAlerts} 
+                          onCheckedChange={(checked) => updateNotifications({ ipoAlerts: checked })}
+                        />
                       </div>
                       
                       <div className="flex items-center justify-between">
@@ -146,7 +228,10 @@ const Settings = () => {
                           <p className="font-medium text-foreground">Market Timing</p>
                           <p className="text-sm text-muted-foreground">Session start/end notifications</p>
                         </div>
-                        <Switch defaultChecked={settingsData.notifications.marketTiming} />
+                        <Switch 
+                          checked={settings.notifications.marketTiming} 
+                          onCheckedChange={(checked) => updateNotifications({ marketTiming: checked })}
+                        />
                       </div>
                       
                       <div className="flex items-center justify-between">
@@ -154,7 +239,10 @@ const Settings = () => {
                           <p className="font-medium text-foreground">Email Notifications</p>
                           <p className="text-sm text-muted-foreground">Receive alerts via email</p>
                         </div>
-                        <Switch defaultChecked={settingsData.notifications.emailNotifications} />
+                        <Switch 
+                          checked={settings.notifications.emailNotifications} 
+                          onCheckedChange={(checked) => updateNotifications({ emailNotifications: checked })}
+                        />
                       </div>
                       
                       <div className="flex items-center justify-between">
@@ -162,7 +250,10 @@ const Settings = () => {
                           <p className="font-medium text-foreground">Push Notifications</p>
                           <p className="text-sm text-muted-foreground">Browser push notifications</p>
                         </div>
-                        <Switch defaultChecked={settingsData.notifications.pushNotifications} />
+                        <Switch 
+                          checked={settings.notifications.pushNotifications} 
+                          onCheckedChange={(checked) => updateNotifications({ pushNotifications: checked })}
+                        />
                       </div>
                     </div>
                   </GlassCardContent>
@@ -183,29 +274,49 @@ const Settings = () => {
                     <GlassCardContent>
                       <div className="space-y-4">
                         <div>
-                          <Label htmlFor="theme">Theme</Label>
+                          <Label htmlFor="theme" className="text-foreground">Theme</Label>
                           <Input 
                             id="theme" 
-                            defaultValue={settingsData.display.theme}
-                            className="bg-tahoe backdrop-blur-tahoe border-white/8 mt-2"
+                            value={settings.display.theme}
+                            className="bg-input border-border text-muted-foreground mt-2"
                             readOnly
                           />
                         </div>
                         <div>
-                          <Label htmlFor="language">Language</Label>
-                          <Input 
-                            id="language" 
-                            defaultValue={settingsData.display.language}
-                            className="bg-tahoe backdrop-blur-tahoe border-white/8 mt-2"
-                          />
+                          <Label htmlFor="language" className="text-foreground">Language</Label>
+                          <Select 
+                            value={settings.display.language} 
+                            onValueChange={(value) => updateDisplay({ language: value })}
+                          >
+                            <SelectTrigger className="bg-input border-border text-foreground mt-2">
+                              <SelectValue placeholder="Select language" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-background border-border">
+                              {languages.map((lang) => (
+                                <SelectItem key={lang.value} value={lang.value} className="text-foreground hover:bg-accent">
+                                  {lang.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
                         <div>
-                          <Label htmlFor="dateFormat">Date Format</Label>
-                          <Input 
-                            id="dateFormat" 
-                            defaultValue={settingsData.display.dateFormat}
-                            className="bg-tahoe backdrop-blur-tahoe border-white/8 mt-2"
-                          />
+                          <Label htmlFor="dateFormat" className="text-foreground">Date Format</Label>
+                          <Select 
+                            value={settings.display.dateFormat} 
+                            onValueChange={(value) => updateDisplay({ dateFormat: value })}
+                          >
+                            <SelectTrigger className="bg-input border-border text-foreground mt-2">
+                              <SelectValue placeholder="Select date format" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-background border-border">
+                              {dateFormats.map((format) => (
+                                <SelectItem key={format.value} value={format.value} className="text-foreground hover:bg-accent">
+                                  {format.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
                       </div>
                     </GlassCardContent>
@@ -229,7 +340,10 @@ const Settings = () => {
                             <p className="font-medium text-foreground">Two-Factor Authentication</p>
                             <p className="text-sm text-muted-foreground">Add extra security to your account</p>
                           </div>
-                          <Switch defaultChecked={settingsData.security.twoFactorAuth} />
+                          <Switch 
+                            checked={settings.security.twoFactorAuth} 
+                            onCheckedChange={(checked) => updateSecurity({ twoFactorAuth: checked })}
+                          />
                         </div>
                         
                         <div className="flex items-center justify-between">
@@ -237,21 +351,34 @@ const Settings = () => {
                             <p className="font-medium text-foreground">Login Alerts</p>
                             <p className="text-sm text-muted-foreground">Get notified of new login attempts</p>
                           </div>
-                          <Switch defaultChecked={settingsData.security.loginAlerts} />
-                        </div>
-                        
-                        <div>
-                          <Label htmlFor="sessionTimeout">Session Timeout</Label>
-                          <Input 
-                            id="sessionTimeout" 
-                            defaultValue={settingsData.security.sessionTimeout}
-                            className="bg-tahoe backdrop-blur-tahoe border-white/8 mt-2"
+                          <Switch 
+                            checked={settings.security.loginAlerts} 
+                            onCheckedChange={(checked) => updateSecurity({ loginAlerts: checked })}
                           />
                         </div>
                         
+                        <div>
+                          <Label htmlFor="sessionTimeout" className="text-foreground">Session Timeout</Label>
+                          <Select 
+                            value={settings.security.sessionTimeout} 
+                            onValueChange={(value) => updateSecurity({ sessionTimeout: value })}
+                          >
+                            <SelectTrigger className="bg-input border-border text-foreground mt-2">
+                              <SelectValue placeholder="Select timeout" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-background border-border">
+                              {sessionTimeouts.map((timeout) => (
+                                <SelectItem key={timeout.value} value={timeout.value} className="text-foreground hover:bg-accent">
+                                  {timeout.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        
                         <div className="space-y-2">
-                          <Button variant="outline" className="w-full">Change Password</Button>
-                          <Button variant="outline" className="w-full">Download Account Data</Button>
+                          <Button variant="outline" className="w-full border-border text-foreground hover:bg-accent">Change Password</Button>
+                          <Button variant="outline" className="w-full border-border text-foreground hover:bg-accent">Download Account Data</Button>
                         </div>
                       </div>
                     </GlassCardContent>
@@ -271,9 +398,30 @@ const Settings = () => {
                   </GlassCardHeader>
                   <GlassCardContent>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <Button variant="outline">Export Portfolio Data</Button>
-                      <Button variant="outline">Export Alert History</Button>
-                      <Button variant="outline">Export Transaction History</Button>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => handleExport('portfolio')}
+                        className="border-border text-foreground hover:bg-accent flex items-center gap-2"
+                      >
+                        <Download className="h-4 w-4" />
+                        Export Portfolio Data
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => handleExport('alerts')}
+                        className="border-border text-foreground hover:bg-accent flex items-center gap-2"
+                      >
+                        <Download className="h-4 w-4" />
+                        Export Alert History
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => handleExport('transactions')}
+                        className="border-border text-foreground hover:bg-accent flex items-center gap-2"
+                      >
+                        <Download className="h-4 w-4" />
+                        Export Transaction History
+                      </Button>
                     </div>
                     <div className="mt-6 pt-6 border-t border-white/8">
                       <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-4">
@@ -281,7 +429,7 @@ const Settings = () => {
                         <p className="text-sm text-muted-foreground mb-4">
                           These actions are permanent and cannot be undone.
                         </p>
-                        <Button variant="destructive">Delete Account</Button>
+                        <Button variant="destructive" className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete Account</Button>
                       </div>
                     </div>
                   </GlassCardContent>
