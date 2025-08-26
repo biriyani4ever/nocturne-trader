@@ -5,17 +5,18 @@ import { AlertsSection } from "@/components/alerts-section";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
+import Footer from "@/components/Footer";
 
 const Index = () => {
   const { signOut, user } = useAuth();
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen w-full bg-background">
-        <div className="flex w-full">
+      <div className="min-h-screen w-full bg-background flex flex-col">
+        <div className="flex w-full flex-1">
           <TradingSidebar />
           
-          <main className="flex-1">
+          <main className="flex-1 flex flex-col">
             {/* Header */}
             <header className="h-16 border-b border-white/6 bg-background/85 backdrop-blur-tahoe-lg flex items-center px-6">
               <SidebarTrigger className="mr-4 text-foreground hover:bg-tahoe-hover p-2 rounded-xl transition-all duration-300" />
@@ -47,7 +48,7 @@ const Index = () => {
             </header>
 
             {/* Content */}
-            <div className="p-6 space-y-8">
+            <div className="flex-1 p-6 space-y-8">
               <section>
                 <h2 className="text-2xl font-bold text-foreground mb-6">Portfolio Overview</h2>
                 <PortfolioOverview />
@@ -58,6 +59,8 @@ const Index = () => {
                 <AlertsSection />
               </section>
             </div>
+
+            <Footer />
           </main>
         </div>
       </div>
