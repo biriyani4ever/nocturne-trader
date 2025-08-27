@@ -15,10 +15,11 @@ import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
 
 const timezones = [
-  { value: "America/New_York", label: "Eastern Time (ET)" },
+  { value: "America/New_York", label: "Eastern Standard Time (EST)" },
   { value: "America/Chicago", label: "Central Time (CT)" },
   { value: "America/Denver", label: "Mountain Time (MT)" },
   { value: "America/Los_Angeles", label: "Pacific Time (PT)" },
+  { value: "Asia/Kolkata", label: "Indian Standard Time (IST)" },
   { value: "Europe/London", label: "Greenwich Mean Time (GMT)" },
   { value: "Europe/Paris", label: "Central European Time (CET)" },
   { value: "Asia/Tokyo", label: "Japan Standard Time (JST)" },
