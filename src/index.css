@@ -71,6 +71,68 @@
     --tahoe-blur: 20px;
     --tahoe-blur-lg: 24px;
   }
+
+  /* Light theme variables */
+  .light {
+    /* Core monochromatic palette - inverted */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+
+    /* Glass morphism cards - light style */
+    --card: 0 0% 0%;
+    --card-foreground: 0 0% 0%;
+    
+    /* Interactive elements - inverted */
+    --primary: 0 0% 0%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 92%;
+    --secondary-foreground: 0 0% 0%;
+
+    --muted: 0 0% 88%;
+    --muted-foreground: 0 0% 25%;
+
+    --accent: 0 0% 85%;
+    --accent-foreground: 0 0% 0%;
+
+    /* Status colors - adjusted for light theme */
+    --success: 120 100% 35%;
+    --success-foreground: 0 0% 100%;
+    
+    --warning: 45 100% 40%;
+    --warning-foreground: 0 0% 100%;
+    
+    --destructive: 0 100% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* UI elements - light theme */ 
+    --border: 0 0% 82%;
+    --input: 0 0% 92%;
+    --ring: 0 0% 0%;
+
+    /* Sidebar specific - light theme */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 0 0% 0%;
+    --sidebar-primary: 0 0% 0%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 94%;
+    --sidebar-accent-foreground: 0 0% 0%;
+    --sidebar-border: 0 0% 88%;
+    --sidebar-ring: 0 0% 0%;
+
+    /* macOS Tahoe Glass Effects - light theme */
+    --tahoe-glass-bg: hsla(0, 0%, 0%, 0.03);
+    --tahoe-glass-hover: hsla(0, 0%, 0%, 0.06);
+    --tahoe-glass-active: hsla(0, 0%, 0%, 0.08);
+    --tahoe-glass-border: hsla(0, 0%, 0%, 0.08);
+    --tahoe-glass-shadow: 0 4px 24px hsla(0, 0%, 0%, 0.1);
+    --tahoe-glass-shadow-lg: 0 8px 40px hsla(0, 0%, 0%, 0.15);
+    
+    /* Refined Gradients - light theme */
+    --gradient-tahoe: linear-gradient(145deg, hsla(0, 0%, 0%, 0.04), hsla(0, 0%, 0%, 0.02));
+    --gradient-tahoe-hover: linear-gradient(145deg, hsla(0, 0%, 0%, 0.08), hsla(0, 0%, 0%, 0.04));
+    --gradient-tahoe-active: linear-gradient(145deg, hsla(0, 0%, 0%, 0.12), hsla(0, 0%, 0%, 0.06));
+  }
 }
 
 @layer base {

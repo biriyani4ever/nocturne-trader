@@ -78,12 +78,15 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
 
   // Apply theme changes to document
   useEffect(() => {
+    document.documentElement.classList.toggle('light', settings.display.theme === 'light');
     document.documentElement.classList.toggle('dark', settings.display.theme === 'dark');
   }, [settings.display.theme]);
 
-  // Save to localStorage whenever settings change
+  // Save to localStorage and trigger updates whenever settings change
   useEffect(() => {
     localStorage.setItem('trading-app-settings', JSON.stringify(settings));
+    // Force re-render of all components that use settings
+    window.dispatchEvent(new CustomEvent('settingsChanged', { detail: settings }));
   }, [settings]);
 
   const updateProfile = (profile: Partial<SettingsState['profile']>) => {
@@ -121,8 +124,14 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
       await new Promise(resolve => setTimeout(resolve, 1000));
       localStorage.setItem('trading-app-settings', JSON.stringify(settings));
       
-      // Force re-render of components that depend on settings
+      // Force immediate re-render of all components
+      window.dispatchEvent(new CustomEvent('settingsChanged', { detail: settings }));
       window.dispatchEvent(new Event('storage'));
+      
+      // Force a small delay then another update to ensure all components catch up
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('settingsChanged', { detail: settings }));
+      }, 100);
       
       toast({
         title: "Settings saved",
