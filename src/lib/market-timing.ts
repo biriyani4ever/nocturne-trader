@@ -55,31 +55,31 @@ export const MARKET_HOLIDAYS_2024 = [
 
 const EST_TIMEZONE = 'America/New_York';
 
-export function getMarketDate(): Date {
-  return toZonedTime(new Date(), EST_TIMEZONE);
+export function getMarketDate(timezone?: string): Date {
+  return toZonedTime(new Date(), timezone || EST_TIMEZONE);
 }
 
-export function isMarketHoliday(date: Date = new Date()): boolean {
-  const dateStr = formatInTimeZone(date, EST_TIMEZONE, 'yyyy-MM-dd');
+export function isMarketHoliday(date: Date = new Date(), timezone?: string): boolean {
+  const dateStr = formatInTimeZone(date, timezone || EST_TIMEZONE, 'yyyy-MM-dd');
   return MARKET_HOLIDAYS_2024.includes(dateStr);
 }
 
-export function isMarketDay(date: Date = new Date()): boolean {
-  return !isWeekend(date) && !isMarketHoliday(date);
+export function isMarketDay(date: Date = new Date(), timezone?: string): boolean {
+  return !isWeekend(date) && !isMarketHoliday(date, timezone);
 }
 
-export function getNextMarketDay(date: Date = new Date()): Date {
+export function getNextMarketDay(date: Date = new Date(), timezone?: string): Date {
   let nextDay = addDays(date, 1);
-  while (!isMarketDay(nextDay)) {
+  while (!isMarketDay(nextDay, timezone)) {
     nextDay = addDays(nextDay, 1);
   }
   return nextDay;
 }
 
-export function getCurrentMarketSession(): string {
-  const now = getMarketDate();
+export function getCurrentMarketSession(timezone?: string): string {
+  const now = getMarketDate(timezone);
   
-  if (!isMarketDay(now)) {
+  if (!isMarketDay(now, timezone)) {
     return 'Closed';
   }
 
@@ -105,11 +105,11 @@ export function getCurrentMarketSession(): string {
   }
 }
 
-export function getTimeUntilNextSession(): { session: string; timeUntil: string; nextEventTime: string } {
-  const now = getMarketDate();
+export function getTimeUntilNextSession(timezone?: string): { session: string; timeUntil: string; nextEventTime: string } {
+  const now = getMarketDate(timezone);
   
-  if (!isMarketDay(now)) {
-    const nextMarketDay = getNextMarketDay(now);
+  if (!isMarketDay(now, timezone)) {
+    const nextMarketDay = getNextMarketDay(now, timezone);
     const nextPreMarketStart = new Date(nextMarketDay);
     nextPreMarketStart.setHours(MARKET_SESSIONS.PRE_MARKET.start.hour, MARKET_SESSIONS.PRE_MARKET.start.minute, 0, 0);
     
@@ -117,7 +117,7 @@ export function getTimeUntilNextSession(): { session: string; timeUntil: string;
     return {
       session: 'Pre-Market',
       timeUntil: formatDuration(minutesUntil),
-      nextEventTime: formatInTimeZone(nextPreMarketStart, EST_TIMEZONE, 'h:mm a')
+      nextEventTime: formatInTimeZone(nextPreMarketStart, timezone || EST_TIMEZONE, 'h:mm a')
     };
   }
 
@@ -169,7 +169,7 @@ export function getTimeUntilNextSession(): { session: string; timeUntil: string;
   }
   
   // After market close - next session is tomorrow's pre-market
-  const nextMarketDay = getNextMarketDay(now);
+  const nextMarketDay = getNextMarketDay(now, timezone);
   const nextPreMarketStart = new Date(nextMarketDay);
   nextPreMarketStart.setHours(MARKET_SESSIONS.PRE_MARKET.start.hour, MARKET_SESSIONS.PRE_MARKET.start.minute, 0, 0);
   
@@ -177,7 +177,7 @@ export function getTimeUntilNextSession(): { session: string; timeUntil: string;
   return {
     session: 'Pre-Market',
     timeUntil: formatDuration(minutesUntil),
-    nextEventTime: formatInTimeZone(nextPreMarketStart, EST_TIMEZONE, 'h:mm a')
+    nextEventTime: formatInTimeZone(nextPreMarketStart, timezone || EST_TIMEZONE, 'h:mm a')
   };
 }
 
@@ -198,8 +198,8 @@ export function formatDuration(minutes: number): string {
   return `${days}d ${remainingHours}h`;
 }
 
-export function getMarketSessions(): MarketSession[] {
-  const currentSession = getCurrentMarketSession();
+export function getMarketSessions(timezone?: string): MarketSession[] {
+  const currentSession = getCurrentMarketSession(timezone);
   
   return [
     {
@@ -207,7 +207,7 @@ export function getMarketSessions(): MarketSession[] {
       startTime: '4:00 AM EST',
       endTime: '9:30 AM EST',
       status: currentSession === 'Pre-Market' ? 'active' : 
-              (currentSession === 'Closed' && getTimeUntilNextSession().session === 'Pre-Market') ? 'upcoming' : 'closed',
+              (currentSession === 'Closed' && getTimeUntilNextSession(timezone).session === 'Pre-Market') ? 'upcoming' : 'closed',
       nextEvent: 'Market Open',
       nextTime: '9:30 AM',
       description: 'Extended hours trading before market open'
@@ -235,10 +235,10 @@ export function getMarketSessions(): MarketSession[] {
   ];
 }
 
-export function getMarketStatus(): MarketStatus {
-  const now = getMarketDate();
-  const currentSession = getCurrentMarketSession();
-  const nextSession = getTimeUntilNextSession();
+export function getMarketStatus(timezone?: string): MarketStatus {
+  const now = getMarketDate(timezone);
+  const currentSession = getCurrentMarketSession(timezone);
+  const nextSession = getTimeUntilNextSession(timezone);
   
   return {
     current: currentSession,
@@ -246,14 +246,14 @@ export function getMarketStatus(): MarketStatus {
     nextSession: nextSession.session,
     timezone: 'Eastern Standard Time',
     isMarketOpen: currentSession !== 'Closed',
-    currentDate: formatInTimeZone(now, EST_TIMEZONE, 'MMM dd, yyyy'),
-    currentTime: formatInTimeZone(now, EST_TIMEZONE, 'h:mm:ss a')
+    currentDate: formatInTimeZone(now, timezone || EST_TIMEZONE, 'MMM dd, yyyy'),
+    currentTime: formatInTimeZone(now, timezone || EST_TIMEZONE, 'h:mm:ss a')
   };
 }
 
-export function generateMarketAlerts(): MarketAlert[] {
-  const now = getMarketDate();
-  const currentSession = getCurrentMarketSession();
+export function generateMarketAlerts(timezone?: string): MarketAlert[] {
+  const now = getMarketDate(timezone);
+  const currentSession = getCurrentMarketSession(timezone);
   const alerts: MarketAlert[] = [];
   
   // Generate session-based alerts
@@ -264,7 +264,7 @@ export function generateMarketAlerts(): MarketAlert[] {
       message: 'Pre-market trading is currently active',
       time: '4:00 AM',
       status: 'triggered',
-      timestamp: formatInTimeZone(now, EST_TIMEZONE, 'yyyy-MM-dd HH:mm:ss')
+      timestamp: formatInTimeZone(now, timezone || EST_TIMEZONE, 'yyyy-MM-dd HH:mm:ss')
     });
   }
   
@@ -275,7 +275,7 @@ export function generateMarketAlerts(): MarketAlert[] {
       message: 'Regular trading session is now active',
       time: '9:30 AM',
       status: 'triggered',
-      timestamp: formatInTimeZone(now, EST_TIMEZONE, 'yyyy-MM-dd HH:mm:ss')
+      timestamp: formatInTimeZone(now, timezone || EST_TIMEZONE, 'yyyy-MM-dd HH:mm:ss')
     });
   }
   
@@ -286,12 +286,12 @@ export function generateMarketAlerts(): MarketAlert[] {
       message: 'After-hours trading is currently active',
       time: '4:00 PM',
       status: 'triggered',
-      timestamp: formatInTimeZone(now, EST_TIMEZONE, 'yyyy-MM-dd HH:mm:ss')
+      timestamp: formatInTimeZone(now, timezone || EST_TIMEZONE, 'yyyy-MM-dd HH:mm:ss')
     });
   }
   
   // Add upcoming session alerts
-  const nextSession = getTimeUntilNextSession();
+  const nextSession = getTimeUntilNextSession(timezone);
   if (nextSession.session !== 'Closed') {
     alerts.push({
       id: 'next-session',
@@ -299,7 +299,7 @@ export function generateMarketAlerts(): MarketAlert[] {
       message: `${nextSession.session} will begin in ${nextSession.timeUntil}`,
       time: nextSession.nextEventTime,
       status: 'pending',
-      timestamp: formatInTimeZone(now, EST_TIMEZONE, 'yyyy-MM-dd HH:mm:ss')
+      timestamp: formatInTimeZone(now, timezone || EST_TIMEZONE, 'yyyy-MM-dd HH:mm:ss')
     });
   }
   

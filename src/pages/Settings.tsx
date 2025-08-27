@@ -75,6 +75,42 @@ const Settings = () => {
       });
     }
   };
+
+  const handleSettingChange = (section: string, key: string, value: any) => {
+    switch (section) {
+      case 'profile':
+        updateProfile({ [key]: value });
+        break;
+      case 'notifications':
+        updateNotifications({ [key]: value });
+        break;
+      case 'display':
+        updateDisplay({ [key]: value });
+        break;
+      case 'security':
+        updateSecurity({ [key]: value });
+        break;
+    }
+    
+    // Show immediate feedback for important changes
+    if (key === 'theme') {
+      toast({
+        title: "Theme changed",
+        description: `Switched to ${value} mode. Save changes to persist.`,
+      });
+    } else if (key === 'currency') {
+      toast({
+        title: "Currency changed",
+        description: `Now displaying in ${value}. Save changes to persist.`,
+      });
+    } else if (key === 'timezone') {
+      toast({
+        title: "Timezone changed",
+        description: `Times will now display in ${value}. Save changes to persist.`,
+      });
+    }
+  };
+
   return (
     <SidebarProvider>
       <div className="min-h-screen w-full bg-background">
@@ -113,7 +149,7 @@ const Settings = () => {
                         <Input 
                           id="name" 
                           value={settings.profile.name}
-                          onChange={(e) => updateProfile({ name: e.target.value })}
+                          onChange={(e) => handleSettingChange('profile', 'name', e.target.value)}
                           className="bg-input border-border text-foreground placeholder:text-muted-foreground"
                         />
                       </div>
@@ -123,7 +159,7 @@ const Settings = () => {
                           id="email" 
                           type="email"
                           value={settings.profile.email}
-                          onChange={(e) => updateProfile({ email: e.target.value })}
+                          onChange={(e) => handleSettingChange('profile', 'email', e.target.value)}
                           className="bg-input border-border text-foreground placeholder:text-muted-foreground"
                         />
                       </div>
@@ -131,7 +167,7 @@ const Settings = () => {
                         <Label htmlFor="timezone" className="text-foreground">Timezone</Label>
                         <Select 
                           value={settings.profile.timezone} 
-                          onValueChange={(value) => updateProfile({ timezone: value })}
+                          onValueChange={(value) => handleSettingChange('profile', 'timezone', value)}
                         >
                           <SelectTrigger className="bg-input border-border text-foreground">
                             <SelectValue placeholder="Select timezone" />
@@ -149,7 +185,7 @@ const Settings = () => {
                         <Label htmlFor="currency" className="text-foreground">Default Currency</Label>
                         <Select 
                           value={settings.profile.currency} 
-                          onValueChange={(value) => updateProfile({ currency: value })}
+                          onValueChange={(value) => handleSettingChange('profile', 'currency', value)}
                         >
                           <SelectTrigger className="bg-input border-border text-foreground">
                             <SelectValue placeholder="Select currency" />
@@ -197,7 +233,7 @@ const Settings = () => {
                         </div>
                         <Switch 
                           checked={settings.notifications.priceAlerts} 
-                          onCheckedChange={(checked) => updateNotifications({ priceAlerts: checked })}
+                          onCheckedChange={(checked) => handleSettingChange('notifications', 'priceAlerts', checked)}
                         />
                       </div>
                       
@@ -208,7 +244,7 @@ const Settings = () => {
                         </div>
                         <Switch 
                           checked={settings.notifications.dividendAlerts} 
-                          onCheckedChange={(checked) => updateNotifications({ dividendAlerts: checked })}
+                          onCheckedChange={(checked) => handleSettingChange('notifications', 'dividendAlerts', checked)}
                         />
                       </div>
                       
@@ -219,7 +255,7 @@ const Settings = () => {
                         </div>
                         <Switch 
                           checked={settings.notifications.ipoAlerts} 
-                          onCheckedChange={(checked) => updateNotifications({ ipoAlerts: checked })}
+                          onCheckedChange={(checked) => handleSettingChange('notifications', 'ipoAlerts', checked)}
                         />
                       </div>
                       
@@ -230,7 +266,7 @@ const Settings = () => {
                         </div>
                         <Switch 
                           checked={settings.notifications.marketTiming} 
-                          onCheckedChange={(checked) => updateNotifications({ marketTiming: checked })}
+                          onCheckedChange={(checked) => handleSettingChange('notifications', 'marketTiming', checked)}
                         />
                       </div>
                       
@@ -241,7 +277,7 @@ const Settings = () => {
                         </div>
                         <Switch 
                           checked={settings.notifications.emailNotifications} 
-                          onCheckedChange={(checked) => updateNotifications({ emailNotifications: checked })}
+                          onCheckedChange={(checked) => handleSettingChange('notifications', 'emailNotifications', checked)}
                         />
                       </div>
                       
@@ -252,7 +288,7 @@ const Settings = () => {
                         </div>
                         <Switch 
                           checked={settings.notifications.pushNotifications} 
-                          onCheckedChange={(checked) => updateNotifications({ pushNotifications: checked })}
+                          onCheckedChange={(checked) => handleSettingChange('notifications', 'pushNotifications', checked)}
                         />
                       </div>
                     </div>
@@ -275,18 +311,24 @@ const Settings = () => {
                       <div className="space-y-4">
                         <div>
                           <Label htmlFor="theme" className="text-foreground">Theme</Label>
-                          <Input 
-                            id="theme" 
-                            value={settings.display.theme}
-                            className="bg-input border-border text-muted-foreground mt-2"
-                            readOnly
-                          />
+                          <Select 
+                            value={settings.display.theme} 
+                            onValueChange={(value) => handleSettingChange('display', 'theme', value)}
+                          >
+                            <SelectTrigger className="bg-input border-border text-foreground mt-2">
+                              <SelectValue placeholder="Select theme" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-background border-border">
+                              <SelectItem value="dark" className="text-foreground hover:bg-accent">Dark</SelectItem>
+                              <SelectItem value="light" className="text-foreground hover:bg-accent">Light</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                         <div>
                           <Label htmlFor="language" className="text-foreground">Language</Label>
                           <Select 
                             value={settings.display.language} 
-                            onValueChange={(value) => updateDisplay({ language: value })}
+                            onValueChange={(value) => handleSettingChange('display', 'language', value)}
                           >
                             <SelectTrigger className="bg-input border-border text-foreground mt-2">
                               <SelectValue placeholder="Select language" />
@@ -304,7 +346,7 @@ const Settings = () => {
                           <Label htmlFor="dateFormat" className="text-foreground">Date Format</Label>
                           <Select 
                             value={settings.display.dateFormat} 
-                            onValueChange={(value) => updateDisplay({ dateFormat: value })}
+                            onValueChange={(value) => handleSettingChange('display', 'dateFormat', value)}
                           >
                             <SelectTrigger className="bg-input border-border text-foreground mt-2">
                               <SelectValue placeholder="Select date format" />
@@ -342,7 +384,7 @@ const Settings = () => {
                           </div>
                           <Switch 
                             checked={settings.security.twoFactorAuth} 
-                            onCheckedChange={(checked) => updateSecurity({ twoFactorAuth: checked })}
+                            onCheckedChange={(checked) => handleSettingChange('security', 'twoFactorAuth', checked)}
                           />
                         </div>
                         
@@ -353,7 +395,7 @@ const Settings = () => {
                           </div>
                           <Switch 
                             checked={settings.security.loginAlerts} 
-                            onCheckedChange={(checked) => updateSecurity({ loginAlerts: checked })}
+                            onCheckedChange={(checked) => handleSettingChange('security', 'loginAlerts', checked)}
                           />
                         </div>
                         
@@ -361,7 +403,7 @@ const Settings = () => {
                           <Label htmlFor="sessionTimeout" className="text-foreground">Session Timeout</Label>
                           <Select 
                             value={settings.security.sessionTimeout} 
-                            onValueChange={(value) => updateSecurity({ sessionTimeout: value })}
+                            onValueChange={(value) => handleSettingChange('security', 'sessionTimeout', value)}
                           >
                             <SelectTrigger className="bg-input border-border text-foreground mt-2">
                               <SelectValue placeholder="Select timeout" />

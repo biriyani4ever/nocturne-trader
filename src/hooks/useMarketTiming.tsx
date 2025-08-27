@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSettings } from './useSettings';
 import { 
   getMarketSessions, 
   getMarketStatus, 
@@ -30,6 +31,7 @@ interface UseMarketTimingReturn {
 }
 
 export function useMarketTiming(): UseMarketTimingReturn {
+  const { settings } = useSettings();
   const [marketSessions, setMarketSessions] = useState<MarketSession[]>([]);
   const [marketStatus, setMarketStatus] = useState<MarketStatus>({
     current: 'Closed',
@@ -56,9 +58,10 @@ export function useMarketTiming(): UseMarketTimingReturn {
 
   const updateMarketData = () => {
     try {
-      const sessions = getMarketSessions();
-      const status = getMarketStatus();
-      const marketAlerts = generateMarketAlerts();
+      const timezone = settings.profile.timezone;
+      const sessions = getMarketSessions(timezone);
+      const status = getMarketStatus(timezone);
+      const marketAlerts = generateMarketAlerts(timezone);
       const events = getUpcomingMarketEvents();
       const eventsAlerts = generateEventAlerts(events);
 
@@ -83,7 +86,7 @@ export function useMarketTiming(): UseMarketTimingReturn {
     const interval = setInterval(updateMarketData, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [settings.profile.timezone]); // Re-run when timezone changes
 
   return {
     marketSessions,
