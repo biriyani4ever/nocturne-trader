@@ -3,12 +3,16 @@ import { TradingSidebar } from "@/components/trading-sidebar";
 import { PortfolioOverview } from "@/components/portfolio-overview";
 import { AlertsSection } from "@/components/alerts-section";
 import { useAuth } from "@/hooks/useAuth";
+import { useSettings } from "@/hooks/useSettings";
+import { useMarketTiming } from "@/hooks/useMarketTiming";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import Footer from "@/components/Footer";
 
 const Index = () => {
   const { signOut, user } = useAuth();
+  const { settings } = useSettings();
+  const { marketStatus } = useMarketTiming();
 
   return (
     <SidebarProvider>
@@ -28,9 +32,12 @@ const Index = () => {
                 <div className="text-right mr-4">
                   <p className="text-sm text-muted-foreground">Market Status</p>
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-success rounded-full"></div>
-                    <span className="text-sm font-medium text-foreground">Open</span>
+                    <div className={`w-2 h-2 rounded-full ${marketStatus.isMarketOpen ? 'bg-success' : 'bg-destructive'}`}></div>
+                    <span className="text-sm font-medium text-foreground">
+                      {marketStatus.isMarketOpen ? 'Open' : 'Closed'}
+                    </span>
                   </div>
+                  <p className="text-xs text-muted-foreground">{marketStatus.current}</p>
                 </div>
                 <div className="text-right mr-4">
                   <p className="text-xs text-muted-foreground">Signed in as</p>

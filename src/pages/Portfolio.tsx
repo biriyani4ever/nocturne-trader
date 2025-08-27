@@ -1,6 +1,7 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { TradingSidebar } from "@/components/trading-sidebar";
 import { GlassCard, GlassCardContent, GlassCardHeader, GlassCardTitle } from "@/components/ui/glass-card";
+import { CurrencyDisplay } from "@/components/CurrencyDisplay";
 import { TrendingUp, TrendingDown, DollarSign, PieChart } from "lucide-react";
 
 const portfolioData = {
@@ -89,9 +90,7 @@ const Portfolio = () => {
                     <GlassCardContent>
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-3xl font-bold text-foreground">
-                            ${portfolioData.totalValue.toLocaleString()}
-                          </p>
+                          <CurrencyDisplay value={portfolioData.totalValue} className="text-3xl font-bold text-foreground" />
                         </div>
                         <PieChart className="h-8 w-8 text-muted-foreground" />
                       </div>
@@ -105,7 +104,7 @@ const Portfolio = () => {
                     <GlassCardContent>
                       <div className="text-center">
                         <p className="text-2xl font-bold text-success">
-                          +${portfolioData.totalGainLoss.toLocaleString()}
+                          +<CurrencyDisplay value={portfolioData.totalGainLoss} />
                         </p>
                         <div className="flex items-center justify-center mt-2 text-success">
                           <TrendingUp className="h-4 w-4 mr-1" />
@@ -156,13 +155,13 @@ const Portfolio = () => {
                                 </div>
                               </td>
                               <td className="p-4 text-foreground">{position.shares}</td>
-                              <td className="p-4 text-foreground">${position.avgPrice.toFixed(2)}</td>
-                              <td className="p-4 text-foreground">${position.currentPrice.toFixed(2)}</td>
-                              <td className="p-4 text-foreground font-semibold">${position.marketValue.toLocaleString()}</td>
+                              <td className="p-4 text-foreground"><CurrencyDisplay value={position.avgPrice} /></td>
+                              <td className="p-4 text-foreground"><CurrencyDisplay value={position.currentPrice} /></td>
+                              <td className="p-4 text-foreground font-semibold"><CurrencyDisplay value={position.marketValue} /></td>
                               <td className="p-4">
                                 <div className="flex items-center text-success">
                                   <TrendingUp className="h-4 w-4 mr-1" />
-                                  <span className="font-semibold">+${position.gainLoss.toLocaleString()}</span>
+                                  <span className="font-semibold">+<CurrencyDisplay value={position.gainLoss} /></span>
                                   <span className="text-sm ml-1">(+{position.gainLossPercent}%)</span>
                                 </div>
                               </td>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, createContext, useContext } from "react";
 import { toast } from "@/hooks/use-toast";
 
 export interface SettingsState {
@@ -57,9 +57,34 @@ const initialSettings: SettingsState = {
   }
 };
 
-export const useSettings = () => {
-  const [settings, setSettings] = useState<SettingsState>(initialSettings);
+// Create context for settings
+const SettingsContext = createContext<{
+  settings: SettingsState;
+  updateProfile: (profile: Partial<SettingsState['profile']>) => void;
+  updateNotifications: (notifications: Partial<SettingsState['notifications']>) => void;
+  updateDisplay: (display: Partial<SettingsState['display']>) => void;
+  updateSecurity: (security: Partial<SettingsState['security']>) => void;
+  saveSettings: () => Promise<void>;
+  isLoading: boolean;
+} | null>(null);
+
+export const SettingsProvider = ({ children }: { children: React.ReactNode }) => {
+  const [settings, setSettings] = useState<SettingsState>(() => {
+    // Load from localStorage on init
+    const saved = localStorage.getItem('trading-app-settings');
+    return saved ? JSON.parse(saved) : initialSettings;
+  });
   const [isLoading, setIsLoading] = useState(false);
+
+  // Apply theme changes to document
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', settings.display.theme === 'dark');
+  }, [settings.display.theme]);
+
+  // Save to localStorage whenever settings change
+  useEffect(() => {
+    localStorage.setItem('trading-app-settings', JSON.stringify(settings));
+  }, [settings]);
 
   const updateProfile = (profile: Partial<SettingsState['profile']>) => {
     setSettings(prev => ({
@@ -94,6 +119,7 @@ export const useSettings = () => {
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
+      localStorage.setItem('trading-app-settings', JSON.stringify(settings));
       toast({
         title: "Settings saved",
         description: "Your preferences have been updated successfully.",
@@ -109,7 +135,7 @@ export const useSettings = () => {
     }
   };
 
-  return {
+  const value = {
     settings,
     isLoading,
     updateProfile,
@@ -118,4 +144,18 @@ export const useSettings = () => {
     updateSecurity,
     saveSettings,
   };
+
+  return (
+    <SettingsContext.Provider value={value}>
+      {children}
+    </SettingsContext.Provider>
+  );
+};
+
+export const useSettings = () => {
+  const context = useContext(SettingsContext);
+  if (!context) {
+    throw new Error('useSettings must be used within a SettingsProvider');
+  }
+  return context;
 };

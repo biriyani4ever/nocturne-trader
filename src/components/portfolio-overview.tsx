@@ -1,5 +1,7 @@
 import { TrendingUp, TrendingDown, DollarSign } from "lucide-react"
 import { GlassCard, GlassCardContent, GlassCardHeader, GlassCardTitle } from "@/components/ui/glass-card"
+import { CurrencyDisplay } from "@/components/CurrencyDisplay"
+import { useMarketTiming } from "@/hooks/useMarketTiming"
 
 const portfolioData = {
   totalValue: 127450.32,
@@ -15,6 +17,7 @@ const portfolioData = {
 
 export function PortfolioOverview() {
   const { totalValue, dailyChange, dailyChangePercent, topHoldings } = portfolioData
+  const { marketStatus } = useMarketTiming()
   const isPositive = dailyChange >= 0
 
   return (
@@ -28,9 +31,7 @@ export function PortfolioOverview() {
           <GlassCardContent>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-3xl font-bold text-foreground">
-                  ${totalValue.toLocaleString()}
-                </p>
+                <CurrencyDisplay value={totalValue} className="text-3xl font-bold text-foreground" />
                 <div className={`flex items-center mt-2 ${
                   isPositive ? 'text-success' : 'text-destructive'
                 }`}>
@@ -40,7 +41,7 @@ export function PortfolioOverview() {
                     <TrendingDown className="h-4 w-4 mr-1" />
                   )}
                   <span className="text-sm font-medium">
-                    ${Math.abs(dailyChange).toLocaleString()} ({Math.abs(dailyChangePercent)}%)
+                    <CurrencyDisplay value={Math.abs(dailyChange)} /> ({Math.abs(dailyChangePercent)}%)
                   </span>
                 </div>
               </div>
@@ -59,7 +60,7 @@ export function PortfolioOverview() {
               <p className={`text-2xl font-bold ${
                 isPositive ? 'text-success' : 'text-destructive'
               }`}>
-                {isPositive ? '+' : ''}${dailyChange.toLocaleString()}
+                {isPositive ? '+' : ''}<CurrencyDisplay value={dailyChange} />
               </p>
               <div className={`flex items-center justify-center mt-2 ${
                 isPositive ? 'text-success' : 'text-destructive'
@@ -84,9 +85,9 @@ export function PortfolioOverview() {
           </GlassCardHeader>
           <GlassCardContent>
             <div className="text-center">
-              <div className="w-3 h-3 bg-success rounded-full mx-auto mb-2"></div>
-              <p className="text-lg font-semibold text-foreground">Open</p>
-              <p className="text-sm text-muted-foreground">NYSE • 6h 32m left</p>
+              <div className={`w-3 h-3 rounded-full mx-auto mb-2 ${marketStatus.isMarketOpen ? 'bg-success' : 'bg-destructive'}`}></div>
+              <p className="text-lg font-semibold text-foreground">{marketStatus.isMarketOpen ? 'Open' : 'Closed'}</p>
+              <p className="text-sm text-muted-foreground">{marketStatus.current} • {marketStatus.timeUntilNext} until {marketStatus.nextSession}</p>
             </div>
           </GlassCardContent>
         </GlassCard>
@@ -106,7 +107,7 @@ export function PortfolioOverview() {
                   <p className="text-sm text-muted-foreground">{holding.name}</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold text-foreground">${holding.value.toLocaleString()}</p>
+                  <CurrencyDisplay value={holding.value} className="font-semibold text-foreground" />
                   <div className={`flex items-center text-sm ${
                     holding.change >= 0 ? 'text-success' : 'text-destructive'
                   }`}>
