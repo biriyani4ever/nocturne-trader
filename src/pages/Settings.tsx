@@ -76,6 +76,49 @@ const Settings = () => {
     }
   };
 
+  const handleDownloadAccountData = async () => {
+    try {
+      // Create comprehensive account data
+      const accountData = {
+        profile: settings.profile,
+        preferences: settings.display,
+        notifications: settings.notifications,
+        security: {
+          twoFactorAuth: settings.security.twoFactorAuth,
+          loginAlerts: settings.security.loginAlerts,
+          sessionTimeout: settings.security.sessionTimeout
+        },
+        exportDate: new Date().toISOString(),
+        version: "1.0"
+      };
+
+      // Convert to JSON and create download
+      const dataStr = JSON.stringify(accountData, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      
+      // Create download link
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `zylo-account-data-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast({
+        title: "Account data downloaded",
+        description: "Your complete account data has been downloaded as JSON file.",
+      });
+    } catch (error) {
+      toast({
+        title: "Download failed",
+        description: "There was an error downloading your account data.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleSettingChange = (section: string, key: string, value: any) => {
     switch (section) {
       case 'profile':
@@ -107,6 +150,11 @@ const Settings = () => {
       toast({
         title: "Timezone changed",
         description: `Times will now display in ${value}. Save changes to persist.`,
+      });
+    } else if (key === 'language') {
+      toast({
+        title: "Language changed",
+        description: `Interface language set to ${value}. Refresh page to see changes.`,
       });
     }
   };
@@ -361,6 +409,17 @@ const Settings = () => {
                           </Select>
                         </div>
                       </div>
+                      
+                      {/* Save Changes Button for Display */}
+                      <div className="pt-4 border-t border-white/6">
+                        <Button 
+                          onClick={saveSettings} 
+                          disabled={isLoading}
+                          className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+                        >
+                          {isLoading ? "Saving..." : "Save Display Changes"}
+                        </Button>
+                      </div>
                     </GlassCardContent>
                   </GlassCard>
                 </section>
@@ -420,7 +479,13 @@ const Settings = () => {
                         
                         <div className="space-y-2">
                           <Button variant="outline" className="w-full border-border text-foreground hover:bg-accent">Change Password</Button>
-                          <Button variant="outline" className="w-full border-border text-foreground hover:bg-accent">Download Account Data</Button>
+                          <Button 
+                            variant="outline" 
+                            onClick={handleDownloadAccountData}
+                            className="w-full border-border text-foreground hover:bg-accent"
+                          >
+                            Download Account Data
+                          </Button>
                         </div>
                       </div>
                     </GlassCardContent>

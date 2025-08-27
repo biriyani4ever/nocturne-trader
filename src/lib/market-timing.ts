@@ -240,11 +240,26 @@ export function getMarketStatus(timezone?: string): MarketStatus {
   const currentSession = getCurrentMarketSession(timezone);
   const nextSession = getTimeUntilNextSession(timezone);
   
+  // Get timezone display name
+  const getTimezoneName = (tz: string) => {
+    const timezoneNames: Record<string, string> = {
+      'America/New_York': 'Eastern Time',
+      'America/Chicago': 'Central Time', 
+      'America/Denver': 'Mountain Time',
+      'America/Los_Angeles': 'Pacific Time',
+      'Europe/London': 'Greenwich Mean Time',
+      'Europe/Paris': 'Central European Time',
+      'Asia/Tokyo': 'Japan Standard Time',
+      'Asia/Shanghai': 'China Standard Time'
+    };
+    return timezoneNames[tz] || 'Eastern Standard Time';
+  };
+  
   return {
     current: currentSession,
     timeUntilNext: nextSession.timeUntil,
     nextSession: nextSession.session,
-    timezone: 'Eastern Standard Time',
+    timezone: getTimezoneName(timezone || EST_TIMEZONE),
     isMarketOpen: currentSession !== 'Closed',
     currentDate: formatInTimeZone(now, timezone || EST_TIMEZONE, 'MMM dd, yyyy'),
     currentTime: formatInTimeZone(now, timezone || EST_TIMEZONE, 'h:mm:ss a')
