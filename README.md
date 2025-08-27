@@ -1,73 +1,160 @@
-# Welcome to your Lovable project
+# Zylo Trading Dashboard
 
-## Project info
+A modern, responsive trading dashboard application built with React and TypeScript. This application provides comprehensive portfolio management, market analysis, and real-time trading alerts for professional traders and investors.
 
-**URL**: https://lovable.dev/projects/b5d83c74-3711-4f2d-a796-700a9bc7a503
+## Features
 
-## How can I edit this code?
+### 🎯 **Core Functionality**
+- **Portfolio Management**: Track holdings, performance, and real-time valuations
+- **Market Analysis**: Real-time market data, indices, and sector performance
+- **Trading Alerts**: IPO alerts, dividend notifications, and price targets
+- **Market Timing**: Pre-market, regular hours, and after-hours session tracking
+- **Multi-Currency Support**: Display values in USD, EUR, GBP, JPY, CAD, AUD, CHF
+- **Global Timezone Support**: Including EST, IST, GMT, CET, JST, CST, and more
 
-There are several ways of editing your application.
+### 🔐 **Security & Authentication**
+- Secure authentication with Supabase
+- Password management and account security
+- Session timeout controls
+- Two-factor authentication support
 
-**Use Lovable**
+### 🎨 **User Experience**
+- Light/Dark theme support with full color inversion
+- Responsive glass-morphism UI design
+- Real-time notifications and alerts
+- Comprehensive settings management
+- PDF export for account data and reports
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/b5d83c74-3711-4f2d-a796-700a9bc7a503) and start prompting.
+### 📊 **Analytics & Reporting**
+- Portfolio performance tracking
+- Market trend analysis
+- Account data export (PDF format)
+- Trading history and transaction logs
 
-Changes made via Lovable will be committed automatically to this repo.
+## Technology Stack
 
-**Use your preferred IDE**
+- **Frontend**: React 18 with TypeScript
+- **Build Tool**: Vite for fast development and optimized builds
+- **Styling**: Tailwind CSS with custom design system
+- **UI Components**: Radix UI primitives with shadcn/ui
+- **Backend**: Supabase for authentication and data management
+- **State Management**: React Context for global settings
+- **Charts**: Recharts for data visualization
+- **PDF Generation**: jsPDF for report exports
+- **Date Handling**: date-fns with timezone support
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Getting Started
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Prerequisites
+- Node.js (v18 or higher)
+- npm or yarn package manager
 
-Follow these steps:
+### Installation
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+1. **Clone the repository**
+   ```sh
+   git clone <your-repository-url>
+   cd zylo-trading-dashboard
+   ```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+2. **Install dependencies**
+   ```sh
+   npm install
+   ```
 
-# Step 3: Install the necessary dependencies.
-npm i
+3. **Environment Setup**
+   ```sh
+   # Copy the example environment file
+   cp .env.example .env
+   
+   # Configure your environment variables
+   # Add your Supabase URL and API keys
+   ```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+4. **Start development server**
+   ```sh
+   npm run dev
+   ```
+
+5. **Open your browser**
+   ```
+   Navigate to http://localhost:5173
+   ```
+
+## Available Scripts
+
+- `npm run dev` - Start development server with hot reload
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build locally
+- `npm run lint` - Run ESLint for code quality
+
+## Project Structure
+
+```
+src/
+├── components/          # Reusable UI components
+│   ├── ui/             # shadcn/ui components
+│   └── ...             # Custom components
+├── hooks/              # Custom React hooks
+├── integrations/       # Third-party service integrations
+├── lib/                # Utility functions and helpers
+├── pages/              # Application pages/routes
+├── utils/              # Helper utilities
+└── ...
 ```
 
-**Edit a file directly in GitHub**
+## Environment Variables
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Create a `.env` file in the root directory with the following variables:
 
-**Use GitHub Codespaces**
+```env
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Deployment
 
-## What technologies are used for this project?
+### Production Build
+```sh
+npm run build
+```
 
-This project is built with:
+The build artifacts will be stored in the `dist/` directory, ready for deployment to any static hosting service.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Deployment Options
+- **Vercel**: Connect your GitHub repository for automatic deployments
+- **Netlify**: Drag and drop the `dist` folder or connect via Git
+- **AWS S3**: Upload the build files to an S3 bucket with static hosting
+- **GitHub Pages**: Use GitHub Actions for automated deployment
 
-## How can I deploy this project?
+## API Integration
 
-Simply open [Lovable](https://lovable.dev/projects/b5d83c74-3711-4f2d-a796-700a9bc7a503) and click on Share -> Publish.
+The application is designed to work with RESTful APIs and includes:
 
-## Can I connect a custom domain to my Lovable project?
+- Authentication endpoints integration
+- Real-time market data connections
+- Portfolio data synchronization
+- Alert management systems
 
-Yes, you can!
+## Browser Support
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+- Chrome (recommended)
+- Firefox
+- Safari
+- Edge
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is proprietary software. All rights reserved.
+
+---
+
+**Zylo Trading Dashboard** - Professional trading tools for modern investors.
