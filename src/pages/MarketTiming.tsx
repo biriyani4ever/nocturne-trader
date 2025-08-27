@@ -4,15 +4,16 @@ import { GlassCard, GlassCardContent, GlassCardHeader, GlassCardTitle } from "@/
 import { Clock, Bell, Activity, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useMarketTiming } from "@/hooks/useMarketTiming";
+import { useSettings } from "@/hooks/useSettings";
 import { isMarketDay, isMarketHoliday } from "@/lib/market-timing";
 
-
 const MarketTiming = () => {
+  const { settings } = useSettings();
   const { marketSessions, marketStatus, alerts, marketEvents, eventAlerts, isLoading } = useMarketTiming();
   
-  // Determine current market day status
-  const isCurrentMarketDay = isMarketDay();
-  const isHoliday = isMarketHoliday();
+  // Determine current market day status using the user's timezone
+  const isCurrentMarketDay = isMarketDay(new Date(), settings.profile.timezone);
+  const isHoliday = isMarketHoliday(new Date(), settings.profile.timezone);
   
   if (isLoading) {
     return (
