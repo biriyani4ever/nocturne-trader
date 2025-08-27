@@ -120,6 +120,10 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       localStorage.setItem('trading-app-settings', JSON.stringify(settings));
+      
+      // Force re-render of components that depend on settings
+      window.dispatchEvent(new Event('storage'));
+      
       toast({
         title: "Settings saved",
         description: "Your preferences have been updated successfully.",

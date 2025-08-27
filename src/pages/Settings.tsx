@@ -7,9 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useSettings } from "@/hooks/useSettings";
 import { exportToPDF } from "@/utils/pdfExport";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 const timezones = [
   { value: "America/New_York", label: "Eastern Time (ET)" },
@@ -58,7 +61,58 @@ const sessionTimeouts = [
 ];
 
 const Settings = () => {
-  const { settings, isLoading, updateProfile, updateNotifications, updateDisplay, updateSecurity, saveSettings } = useSettings();
+  const { settings, updateProfile, updateNotifications, updateDisplay, updateSecurity, saveSettings, isLoading } = useSettings();
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
+
+  const handleChangePassword = async () => {
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Password mismatch",
+        description: "New password and confirmation do not match.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast({
+        title: "Password too short",
+        description: "Password must be at least 6 characters long.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) {
+        toast({
+          title: "Password update failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Password updated",
+          description: "Your password has been successfully changed.",
+        });
+        setNewPassword("");
+        setConfirmPassword("");
+        setIsPasswordDialogOpen(false);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleExport = async (type: 'portfolio' | 'alerts' | 'transactions') => {
     try {
@@ -78,6 +132,9 @@ const Settings = () => {
 
   const handleDownloadAccountData = async () => {
     try {
+      // Import the new PDF export function
+      const { exportAccountDataToPDF } = await import("@/utils/pdfExport");
+      
       // Create comprehensive account data
       const accountData = {
         profile: settings.profile,
@@ -92,23 +149,12 @@ const Settings = () => {
         version: "1.0"
       };
 
-      // Convert to JSON and create download
-      const dataStr = JSON.stringify(accountData, null, 2);
-      const dataBlob = new Blob([dataStr], { type: 'application/json' });
-      
-      // Create download link
-      const url = URL.createObjectURL(dataBlob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `zylo-account-data-${new Date().toISOString().split('T')[0]}.json`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      // Export to PDF
+      exportAccountDataToPDF(accountData);
 
       toast({
         title: "Account data downloaded",
-        description: "Your complete account data has been downloaded as JSON file.",
+        description: "Your complete account data has been downloaded as a PDF file.",
       });
     } catch (error) {
       toast({
@@ -478,7 +524,53 @@ const Settings = () => {
                         </div>
                         
                         <div className="space-y-2">
-                          <Button variant="outline" className="w-full border-border text-foreground hover:bg-accent">Change Password</Button>
+                          <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
+                            <DialogTrigger asChild>
+                              <Button variant="outline" className="w-full border-border text-foreground hover:bg-accent">
+                                Change Password
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="bg-background border-border">
+                              <DialogHeader>
+                                <DialogTitle className="text-foreground">Change Password</DialogTitle>
+                                <DialogDescription className="text-muted-foreground">
+                                  Enter your new password below. Make sure it's at least 6 characters long.
+                                </DialogDescription>
+                              </DialogHeader>
+                              <div className="space-y-4">
+                                <div className="space-y-2">
+                                  <Label htmlFor="newPassword" className="text-foreground">New Password</Label>
+                                  <Input
+                                    id="newPassword"
+                                    type="password"
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    className="bg-input border-border text-foreground"
+                                    placeholder="Enter new password"
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label htmlFor="confirmPassword" className="text-foreground">Confirm Password</Label>
+                                  <Input
+                                    id="confirmPassword"
+                                    type="password"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    className="bg-input border-border text-foreground"
+                                    placeholder="Confirm new password"
+                                  />
+                                </div>
+                              </div>
+                              <DialogFooter>
+                                <Button variant="outline" onClick={() => setIsPasswordDialogOpen(false)}>
+                                  Cancel
+                                </Button>
+                                <Button onClick={handleChangePassword} disabled={!newPassword || !confirmPassword}>
+                                  Change Password
+                                </Button>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
                           <Button 
                             variant="outline" 
                             onClick={handleDownloadAccountData}
